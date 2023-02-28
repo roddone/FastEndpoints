@@ -306,6 +306,28 @@ public static class MainExtensions
                     }
                 }
 
+                if (ep.AllowedClaimValues?.Count > 0)
+                {
+                    if (ep.AllowAnyClaimValue)
+                    {
+                        b.RequireAssertion(x =>
+                            x.User.Claims.Any(c =>
+                                ep.AllowedClaimValues.Any(cv => string.Equals(cv.Type, c.Type, StringComparison.OrdinalIgnoreCase) && cv.Value == c.Value)
+                            )
+                        );
+                    }
+                    else
+                    {
+                        b.RequireAssertion(x =>
+                            ep.AllowedClaimValues.All(t =>
+                                x.User.Claims.Any(c =>
+                                    ep.AllowedClaimValues.Any(cv => string.Equals(cv.Type, c.Type, StringComparison.OrdinalIgnoreCase) && cv.Value == c.Value)
+                                )
+                            )
+                        );
+                    }
+                }
+
                 //note: only claim and permission requirements are added here in the security policy
                 //      roles and auth schemes are specified in the authorizeattribute in BuildAuthorizeAttributes()
             });

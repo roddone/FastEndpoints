@@ -1,7 +1,9 @@
-﻿using FluentValidation;
+﻿using FastEndpoints.Endpoint.Auxiliary;
+using FluentValidation;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics.CodeAnalysis;
+using System.Security.Claims;
 using System.Text.Json.Serialization;
 using static FastEndpoints.Config;
 using static FastEndpoints.Constants;
@@ -26,6 +28,8 @@ public sealed class EndpointDefinition
     //these props can be changed in global config using methods below
     public bool AllowAnyPermission { get; private set; }
     public List<string>? AllowedPermissions { get; private set; }
+    public bool AllowAnyClaimValue { get; private set; }
+    public List<ClaimValue>? AllowedClaimValues { get; private set; }
     public bool AllowAnyClaim { get; private set; }
     public List<string>? AllowedClaimTypes { get; private set; }
     public List<string>? AllowedRoles { get; private set; }
@@ -133,6 +137,30 @@ public sealed class EndpointDefinition
     {
         AuthSchemeNames?.AddRange(authSchemeNames);
         AuthSchemeNames ??= new(authSchemeNames);
+    }
+
+    /// <summary>
+    /// allows access if the claims principal has ANY of the given claim types and values
+    /// <para>HINT: these claims will be applied in addition to endpoint level claims if there's any</para>
+    /// </summary>
+    /// <param name="claimsValues">the claim types and values</param>
+    public void ClaimsValues(params ClaimValue[] claimsValues)
+    {
+        AllowAnyClaimValue = true;
+        AllowedClaimValues?.AddRange(claimsValues);
+        AllowedClaimValues ??= new(claimsValues);
+    }
+
+    /// <summary>
+    /// allows access if the claims principal has ALL of the given claim types and values
+    /// <para>HINT: these claims will be applied in addition to endpoint level claims if there's any</para>
+    /// </summary>
+    /// <param name="claimsValues">the claim types and values</param>
+    public void ClaimsValuesAll(params ClaimValue[] claimsValues)
+    {
+        AllowAnyClaimValue = false;
+        AllowedClaimValues?.AddRange(claimsValues);
+        AllowedClaimValues ??= new(claimsValues);
     }
 
     /// <summary>

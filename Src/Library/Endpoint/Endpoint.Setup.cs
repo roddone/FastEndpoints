@@ -1,4 +1,5 @@
-﻿using FluentValidation;
+﻿using FastEndpoints.Endpoint.Auxiliary;
+using FluentValidation;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -57,6 +58,18 @@ public abstract partial class Endpoint<TRequest, TResponse> : BaseEndpoint where
     /// </summary>
     /// <param name="claimTypes">the claim types</param>
     protected void ClaimsAll(params string[] claimTypes) => Definition.ClaimsAll(claimTypes);
+
+    /// <summary>
+    /// allows access if the claims principal has ANY of the given claim types and values
+    /// </summary>
+    /// <param name="claimsValues"></param>
+    protected void ClaimsValues(params ClaimValue[] claimsValues) => Definition.ClaimsValues(claimsValues);
+
+    /// <summary>
+    /// allows access if the claims principal has ALL of the given claim types and values
+    /// </summary>
+    /// <param name="claimsValues"></param>
+    protected void ClaimsValuesAll(params ClaimValue[] claimsValues) => Definition.ClaimsValuesAll(claimsValues);
 
     /// <summary>
     /// specify to listen for DELETE requests on one or more routes.
